@@ -1,0 +1,11 @@
+.background-container {
+  background-image: url('/public/sky.avif'); /* Chemin de votre image de ciel étoilé */
+  background-size: cover; /* S'assure que l'image couvre tout l'écran */
+  background-position: center; /* Centre l'image */
+  width: 100vw; /* Occupe toute la largeur de l'écran */
+  height: 100vh; /* Occupe toute la hauteur de l'écran */
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1; /* Place l'image derrière le canvas */
+}
