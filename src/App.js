@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 function App() {
   const [showInfo, setShowInfo] = useState(false);
@@ -17,19 +18,28 @@ function App() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; // Enable smooth damping
+    controls.dampingFactor = 0.25; // Damping factor
+    controls.enableZoom = true; // Allow zooming
+    controls.target.set(0, 0, 0); // Set the initial focus point
+
+    // Lights
     const yellowLight = new THREE.PointLight(0xffff00, 1, 100);
     yellowLight.position.set(0, 0, 0);
     scene.add(yellowLight);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1); // Augmentation de l'intensité lumineuse
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
 
+    // Sun
     const sunGeometry = new THREE.SphereGeometry(1.5, 32, 32);
     const sunTexture = new THREE.TextureLoader().load('/sun.jpg');
     const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
     const sun = new THREE.Mesh(sunGeometry, sunMaterial);
     scene.add(sun);
 
+    // Planets
     const planets = [
       { name: 'Mercure', distance: 2, size: 0.2, texture: '/mercur.jpg' },
       { name: 'Venus', distance: 2.5, size: 0.3, texture: '/venus.jpg' },
@@ -49,37 +59,24 @@ function App() {
       const mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
 
+      // Add rings for certain planets
       if (planet.hasRings) {
-        const ringGeometry = new THREE.RingGeometry(planet.size * 2, planet.size * 3, 64);  // Augmenté pour plus de visibilité
-        let ringMaterial;
-
-        if (planet.name === 'Saturne') {
-          ringMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffe4c4, // Jaune pâle
-            side: THREE.DoubleSide,
-            transparent: true,
-            opacity: 0.7,  // Opacité augmentée pour plus de visibilité
-          });
-        } else if (planet.name === 'Pluton') {
-          ringMaterial = new THREE.MeshBasicMaterial({
-            color: 0x222222, // Gris foncé
-            side: THREE.DoubleSide,
-            transparent: true,
-            opacity: 0.5,  // Opacité augmentée pour plus de visibilité
-          });
-        }
-
+        const ringGeometry = new THREE.RingGeometry(planet.size * 2, planet.size * 3, 64);
+        const ringMaterial = new THREE.MeshBasicMaterial({
+          color: planet.name === 'Saturne' ? 0xffe4c4 : 0x222222,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: planet.name === 'Saturne' ? 0.7 : 0.5,
+        });
         const rings = new THREE.Mesh(ringGeometry, ringMaterial);
         rings.rotation.x = Math.PI / 2;
-        rings.position.y = 0.2;  // Légèrement décalé pour éviter le Z-Fighting
         scene.add(rings);
-
-        rings.position.copy(mesh.position);
       }
 
       return { name: planet.name, mesh, distance: planet.distance };
     });
 
+    // Moon
     const moonGeometry = new THREE.SphereGeometry(0.25, 32, 32);
     const moonTexture = new THREE.TextureLoader().load('/moon.png');
     const moonMaterial = new THREE.MeshPhongMaterial({ map: moonTexture });
@@ -87,7 +84,8 @@ function App() {
     scene.add(moon);
 
     const earthIndex = planets.findIndex(p => p.name === 'Terre');
-    
+
+    // Handle clicks on celestial bodies
     const handleObjectClick = (event) => {
       const mouse = new THREE.Vector2(
         (event.clientX / window.innerWidth) * 2 - 1,
@@ -116,6 +114,7 @@ function App() {
             "Diamètre": "12,742 km",
           };
           setBodyData(data);
+          focusOnBody(intersects[0].object);
         }
       } else {
         setShowInfo(false);
@@ -123,57 +122,109 @@ function App() {
       }
     };
 
-    window.addEventListener('click', handleObjectClick);
+    // Function to focus on selected celestial body
+    const focusOnBody = (body) => {
+      const bodyPosition = body.position;
+      controls.target.copy(bodyPosition); // Change the focus point
 
+      const targetPosition = new THREE.Vector3(bodyPosition.x + 5, bodyPosition.y + 5, bodyPosition.z + 5);
+      const duration = 1; // Duration of the animation in seconds
+      const start = camera.position.clone();
+      const clock = new THREE.Clock();
+
+      const animateCamera = () => {
+        const elapsed = clock.getElapsedTime() / duration;
+        if (elapsed < 1) {
+          camera.position.lerpVectors(start, targetPosition, elapsed);
+          controls.update();
+          requestAnimationFrame(animateCamera);
+        } else {
+          camera.position.copy(targetPosition);
+        }
+      };
+
+      animateCamera();
+    };
+
+    // Handle hover effects
+    const handleObjectHover = (event) => {
+      const mouse = new THREE.Vector2(
+        (event.clientX / window.innerWidth) * 2 - 1,
+        -(event.clientY / window.innerHeight) * 2 + 1
+      );
+
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, camera);
+
+      const intersects = raycaster.intersectObjects([...planetMeshes.map(p => p.mesh), moon]);
+
+      if (intersects.length > 0) {
+        const intersectedBody = intersects[0].object;
+        const bodyName = planetMeshes.find(p => p.mesh === intersectedBody)?.name || 'Lune';
+        console.log(`Survol: ${bodyName}`); // Can replace this with a UI display
+      }
+    };
+
+    // Function to create stars in the background
+    const createStars = (count) => {
+      const starGeometry = new THREE.SphereGeometry(0.05, 24, 24);
+      const starMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      
+      for (let i = 0; i < count; i++) {
+        const star = new THREE.Mesh(starGeometry, starMaterial);
+        const [x, y, z] = [Math.random() * 200 - 100, Math.random() * 200 - 100, Math.random() * 200 - 100];
+        star.position.set(x, y, z);
+        scene.add(star);
+      }
+    };;
+
+    // Event listeners
+    window.addEventListener('click', handleObjectClick);
+    window.addEventListener('mousemove', handleObjectHover);
+
+    // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
 
       const time = Date.now() * 0.001;
       planetMeshes.forEach((planet, index) => {
         const theta = time * (0.2 + index * 0.1);
-        const inclination = 0.25;
+        planet.mesh.position.set(planet.distance * Math.cos(theta), 0, planet.distance * Math.sin(theta));
 
-        planet.mesh.position.x = Math.cos(theta) * planet.distance;
-        planet.mesh.position.z = Math.sin(theta) * planet.distance;
-        planet.mesh.position.y = Math.sin(theta) * inclination;
-
-        if (planet.hasRings) {
-          // Synchroniser les anneaux avec la planète
-          const rings = scene.children.find(r => r.geometry instanceof THREE.RingGeometry && r.position.equals(planet.mesh.position));
-          if (rings) {
-            rings.position.copy(planet.mesh.position);
-          }
+        // Positioning the moon around the Earth
+        if (index === earthIndex) {
+          const moonDistance = 0.8; // Distance from Earth to the Moon
+          moon.position.set(planet.mesh.position.x + moonDistance * Math.cos(time * 2), 0, planet.mesh.position.z + moonDistance * Math.sin(time * 2));
         }
       });
 
-      const earthPosition = planetMeshes[earthIndex].mesh.position;
-      const moonTheta = time * 2;
-      moon.position.x = earthPosition.x + Math.cos(moonTheta) * 1;
-      moon.position.z = earthPosition.z + Math.sin(moonTheta) * 1;
-      moon.position.y = earthPosition.y + Math.sin(moonTheta) * 0.25;
-
+      controls.update();
       renderer.render(scene, camera);
     };
+
+    createStars(3000); // Create 100 stars
     animate();
 
     return () => {
       window.removeEventListener('click', handleObjectClick);
-      document.body.removeChild(renderer.domElement);
+      window.removeEventListener('mousemove', handleObjectHover);
+      renderer.dispose();
     };
   }, [selectedBody]);
 
   return (
-    <>
-      <div className="background-container"></div>
+    <div>
       {showInfo && (
-        <div className="info-panel">
-          <h2>Informations sur {selectedBody}</h2>
-          {Object.entries(bodyData).map(([key, value]) => (
-            <p key={key}>{key}: {value}</p>
-          ))}
+        <div className="info">
+          <h2>{selectedBody}</h2>
+          <ul>
+            {Object.entries(bodyData).map(([key, value]) => (
+              <li key={key}>{key}: {value}</li>
+            ))}
+          </ul>
         </div>
       )}
-    </>
+    </div>
   );
 }
 
