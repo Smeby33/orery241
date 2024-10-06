@@ -1,6 +1,50 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.lune:hover{
+  color: #c0cbff;
+}
+
+
 
 .App {
-  display: flex;
+  display: block;
   flex-direction: column;
   min-height: 100vh;
   margin: 0;
@@ -9,6 +53,17 @@
   background-color: #0a0a23; /* Couleur de fond sombre */
   color: #ffffff; /* Texte en blanc */
   overflow-x: hidden;
+}
+.btn{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.btn button{
+  width: 50%;
+  background-color: #061a38;
+  display: flex;
+  justify-content: center;
 }
 /* Global styles */
 
@@ -26,6 +81,22 @@ ul {
   background-color: #1a1a40;
   padding: 15px;
   text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
+}
+.navi .image{
+  height: 60px;
+  width: 30px;
+}
+img{
+  height: 100%;
+}
+.nav1{
+  width: 40%;
+  align-items:start ;
+  font-size: 12px;
 }
 
 .navi ul {
@@ -49,16 +120,15 @@ ul {
 
 /* Home Section */
 .home-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 50px 20px;
+  max-width: 100%;
+  margin: 0;
+  margin-top: -40px;
 }
 
 .home-header h1 {
   font-size: 3.5em;
   text-align: center;
   color: #61dafb;
-  margin-bottom: 20px;
   text-transform: uppercase;
   animation: fade_in_down 2s ease-in-out;
 }
@@ -70,9 +140,24 @@ ul {
   line-height: 1.6;
   animation: fade_in 2.5s ease-in-out;
 }
+.home-header {
+  background-image: url(/public/syssolaire.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  width: 100%;
+  height: 120vh;
+  padding: 0px;
+  margin: 0px;
+}
+.blanc{
+  background-color: rgba(255, 255, 255, 0.212);
+  height: 100%;
+
+}
 
 .h222 h2 {
-  color: #ffffff;
+  color: #061a38;
   text-align: center;
   font-size: 2.5em;
   margin-bottom: 20px;
@@ -116,13 +201,17 @@ ul {
 
 .call-to-action {
   text-align: center;
-  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: 2em;
 }
 
 .call-to-action p {
   font-size: 1.8em;
   margin-bottom: 20px;
-  color: #ffffff;
+  color:#061a38;
   animation: pulse 3s infinite;
 }
 
@@ -143,19 +232,55 @@ ul {
 
 /* Solar System Section */
 .section2 {
-  position: relative;
-  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: radial-gradient(circle, rgba(10,10,35,1) 0%, rgba(18,18,54,1) 100%);
 }
-
-#solar-system {
-  animation: rotate 60s linear infinite;
+.planetess{
+  width: 100%;
+  height: 40vh;
+  display: flex;
+  justify-content: center;
 }
 
 .info {
   background: rgba(255, 255, 255, 0.1);
   padding: 15px;
   border-radius: 8px;
+}
+.budy{
+  display: flex;
+  flex-direction: column;
+}
+.section3{
+  display: flex;
+  justify-content: space-between;
+}
+.section1{
+  padding: 0px;
+  margin: 0px;
+  width: 100%                                                                                     ;
+}
+.container1 {
+  display: none;
+  flex-direction: column; /* Organise les éléments de manière verticale */
+  align-items: center; /* Centre horizontalement */
+  gap: 20px; /* Espace entre les éléments */
+}
+
+.planetess {
+  border: 1px solid #ccc;
+  padding: 20px;
+  width: 100%; /* Prend toute la largeur disponible */
+  max-width: 500px; /* Limite la taille maximale */
+  background-color: #f9f9f9;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Ajoute une ombre pour le style */
+  transition: transform 0.3s ease; /* Animation fluide si tu veux ajouter des effets */
+}
+
+.planetess:hover {
+  transform: scale(1.05); /* Zoom léger au survol */
 }
 
 /* Animations */
