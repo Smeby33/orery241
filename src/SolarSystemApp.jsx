@@ -182,9 +182,9 @@ const SolarSystem = () => {
 
       <div style={{ position: 'absolute', top: 10, left: 10 }}>
         <Link to="/">
-          <button>Quitter</button>
+          <button className='btn2'>Quitter</button>
         </Link>
-        <button onClick={() => setAutoRotate(!autoRotate)}>
+        <button className='btn2' onClick={() => setAutoRotate(!autoRotate)}>
           {autoRotate ? 'Pause Rotation' : 'Activer Rotation'}
         </button>
       </div>

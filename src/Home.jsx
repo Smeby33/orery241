@@ -18,7 +18,7 @@ function App() {
         <div className="nav1">
           <ul>
             <li><Link to="/">Acceuil</Link></li>
-            <li><Link to="/solar-system">Planets</Link></li>
+            <li><a href="#planets">Planets</a></li>
             <li><a href="#education">Education</a></li>
           </ul>
         </div>
@@ -29,7 +29,7 @@ function App() {
       <header className="home-header">
         <div className="blanc">
         <h1>Explorez les Merveilles de Notre Système Solaire</h1>
-        <p>Bienvenue dans notre exploration fascinante du système solaire !
+        <p style={{ color: 'white' }}>Bienvenue dans notre exploration fascinante du système solaire !
            Que vous soyez un novice ou simplement curieux, notre application 
            vous guidera à travers les merveilles célestes qui composent notre 
            environnement spatial. Apprenez à mieux comprendre les planètes qui 
@@ -53,7 +53,7 @@ function App() {
       </h4>
       </div>
       <section className="key-points">
-        <div className="key-point">
+        <div className="key-point" id='planets' >
           <h2>Les Planètes</h2>
           <p>Découvrez les planètes de notre système solaire, leurs caractéristiques uniques et leurs mystères.</p>
         </div>
@@ -68,7 +68,8 @@ function App() {
       </section>
       <section className="call-to-action">
         <p>Plongez dans cette aventure spatiale unique, explorez les corps célestes et préparez-vous à découvrir l’univers comme vous ne l’avez jamais vu !</p>
-        <a href="#solar-system" className="explore-button">Commencez l'exploration</a>
+        <Link to="/solar-system" className="explore-button">Commencez l'exploration</Link>
+        
       </section>
       </div>
       </div>

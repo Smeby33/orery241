@@ -151,7 +151,7 @@ img{
   margin: 0px;
 }
 .blanc{
-  background-color: rgba(255, 255, 255, 0.212);
+  background-color: #061a3880;
   height: 100%;
 
 }
@@ -267,6 +267,11 @@ img{
   flex-direction: column; /* Organise les éléments de manière verticale */
   align-items: center; /* Centre horizontalement */
   gap: 20px; /* Espace entre les éléments */
+}
+.btn2{
+  background-color: #061a38;
+  color: #f9f9f9;
+ margin-right: 20px;
 }
 
 .planetess {
