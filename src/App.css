@@ -1,11 +1,231 @@
-.background-container {
-  background-image: url('/public/sky.avif'); /* Chemin de votre image de ciel étoilé */
-  background-size: cover; /* S'assure que l'image couvre tout l'écran */
-  background-position: center; /* Centre l'image */
-  width: 100vw; /* Occupe toute la largeur de l'écran */
-  height: 100vh; /* Occupe toute la hauteur de l'écran */
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1; /* Place l'image derrière le canvas */
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #0a0a23; /* Couleur de fond sombre */
+  color: #ffffff; /* Texte en blanc */
+  overflow-x: hidden;
+}
+/* Global styles */
+
+a {
+  text-decoration: none;
+  color: #61dafb;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.navi {
+  background-color: #1a1a40;
+  padding: 15px;
+  text-align: center;
+}
+
+.navi ul {
+  display: flex;
+  justify-content: space-around;
+}
+
+.navi ul li {
+  padding: 10px 20px;
+}
+
+.navi ul li a {
+  color: #ffffff;
+  font-size: 1.2em;
+  transition: color 0.3s ease-in-out;
+}
+
+.navi ul li a:hover {
+  color: #61dafb;
+}
+
+/* Home Section */
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 50px 20px;
+}
+
+.home-header h1 {
+  font-size: 3.5em;
+  text-align: center;
+  color: #61dafb;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  animation: fade_in_down 2s ease-in-out;
+}
+
+.home-header p {
+  font-size: 1.5em;
+  text-align: center;
+  margin-bottom: 40px;
+  line-height: 1.6;
+  animation: fade_in 2.5s ease-in-out;
+}
+
+.h222 h2 {
+  color: #ffffff;
+  text-align: center;
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  animation: slide_in_left 1.5s ease-in-out;
+}
+
+.h222 h4 {
+  color: #aaaaaa;
+  font-style: italic;
+  font-size: 1.3em;
+  text-align: center;
+  line-height: 1.6;
+  animation: slide_in_right 2s ease-in-out;
+}
+
+/* Key Points */
+.key-points {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 50px;
+}
+
+.key-point {
+  background-color: #2a2a5e;
+  padding: 20px;
+  border-radius: 10px;
+  width: 30%;
+  text-align: center;
+  transition: transform 0.3s ease-in-out;
+  animation: zoom_in 2.5s ease-in-out;
+}
+
+.key-point:hover {
+  transform: scale(1.1);
+}
+
+.key-point h2 {
+  color: #61dafb;
+  margin-bottom: 15px;
+}
+
+.call-to-action {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.call-to-action p {
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  color: #ffffff;
+  animation: pulse 3s infinite;
+}
+
+.explore-button {
+  background-color: #61dafb;
+  padding: 15px 30px;
+  color: #0a0a23;
+  border-radius: 5px;
+  font-size: 1.5em;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.explore-button:hover {
+  background-color: #ffffff;
+  color: #0a0a23;
+}
+
+/* Solar System Section */
+.section2 {
+  position: relative;
+  height: 100vh;
+  background: radial-gradient(circle, rgba(10,10,35,1) 0%, rgba(18,18,54,1) 100%);
+}
+
+#solar-system {
+  animation: rotate 60s linear infinite;
+}
+
+.info {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+/* Animations */
+@keyframes fade_in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade_in_down {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide_in_left {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide_in_right {
+  0% {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes zoom_in {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

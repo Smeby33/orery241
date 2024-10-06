@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import './App.css'
 
 function App() {
   const [showInfo, setShowInfo] = useState(false);
   const [selectedBody, setSelectedBody] = useState(null); 
   const [bodyData, setBodyData] = useState({});
+  const [rotationSpeed, setRotationSpeed] = useState(0.1); // Vitesse de rotation
 
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -19,10 +21,10 @@ function App() {
     document.body.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; // Enable smooth damping
-    controls.dampingFactor = 0.25; // Damping factor
-    controls.enableZoom = true; // Allow zooming
-    controls.target.set(0, 0, 0); // Set the initial focus point
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+    controls.enableZoom = true;
+    controls.target.set(0, 0, 0);
 
     // Lights
     const yellowLight = new THREE.PointLight(0xffff00, 1, 100);
@@ -34,7 +36,7 @@ function App() {
 
     // Sun
     const sunGeometry = new THREE.SphereGeometry(1.5, 32, 32);
-    const sunTexture = new THREE.TextureLoader().load('/sun.jpg');
+    const sunTexture = new THREE.TextureLoader().load('/suny.jpg');
     const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
     const sun = new THREE.Mesh(sunGeometry, sunMaterial);
     scene.add(sun);
@@ -42,12 +44,12 @@ function App() {
     // Planets
     const planets = [
       { name: 'Mercure', distance: 2, size: 0.2, texture: '/mercur.jpg' },
-      { name: 'Venus', distance: 2.5, size: 0.3, texture: '/venus.jpg' },
+      { name: 'Venus', distance: 2.5, size: 0.3, texture: '/ven.jpg' },
       { name: 'Terre', distance: 3, size: 0.4, texture: '/earth.jpg' },
       { name: 'Mars', distance: 3.5, size: 0.3, texture: '/mars.jpg' },
-      { name: 'Jupiter', distance: 4.5, size: 0.6, texture: '/jupiter.jpg' },
+      { name: 'Jupiter', distance: 4.5, size: 0.6, texture: '/jupi.jpg' },
       { name: 'Saturne', distance: 5.5, size: 0.5, texture: '/saturne.jpg', hasRings: true },
-      { name: 'Uranus', distance: 6.5, size: 0.4, texture: '/uranus.jpg', hasRings: true },
+      { name: 'Uranus', distance: 6.5, size: 0.4, texture: '/uranu.jpg', hasRings: true },
       { name: 'Neptune', distance: 7.5, size: 0.4, texture: '/neptunee.jpg' },
       { name: 'Pluton', distance: 8.5, size: 0.15, texture: '/plutonn.jpg', hasRings: true },
     ];
@@ -76,7 +78,9 @@ function App() {
       return { name: planet.name, mesh, distance: planet.distance };
     });
 
-    // Moon
+    const moonDistance = 1;  // Distance de la Lune à la Terre
+    let moonTheta = 25;  // Angle initial de l'orbite de la Lune
+  
     const moonGeometry = new THREE.SphereGeometry(0.25, 32, 32);
     const moonTexture = new THREE.TextureLoader().load('/moon.png');
     const moonMaterial = new THREE.MeshPhongMaterial({ map: moonTexture });
@@ -125,10 +129,10 @@ function App() {
     // Function to focus on selected celestial body
     const focusOnBody = (body) => {
       const bodyPosition = body.position;
-      controls.target.copy(bodyPosition); // Change the focus point
+      controls.target.copy(bodyPosition);
 
       const targetPosition = new THREE.Vector3(bodyPosition.x + 5, bodyPosition.y + 5, bodyPosition.z + 5);
-      const duration = 1; // Duration of the animation in seconds
+      const duration = 1;
       const start = camera.position.clone();
       const clock = new THREE.Clock();
 
@@ -161,7 +165,7 @@ function App() {
       if (intersects.length > 0) {
         const intersectedBody = intersects[0].object;
         const bodyName = planetMeshes.find(p => p.mesh === intersectedBody)?.name || 'Lune';
-        console.log(`Survol: ${bodyName}`); // Can replace this with a UI display
+        console.log(`Survol: ${bodyName}`);
       }
     };
 
@@ -176,7 +180,7 @@ function App() {
         star.position.set(x, y, z);
         scene.add(star);
       }
-    };;
+    };
 
     // Event listeners
     window.addEventListener('click', handleObjectClick);
@@ -188,42 +192,129 @@ function App() {
 
       const time = Date.now() * 0.001;
       planetMeshes.forEach((planet, index) => {
-        const theta = time * (0.2 + index * 0.1);
-        planet.mesh.position.set(planet.distance * Math.cos(theta), 0, planet.distance * Math.sin(theta));
-
-        // Positioning the moon around the Earth
-        if (index === earthIndex) {
-          const moonDistance = 0.8; // Distance from Earth to the Moon
-          moon.position.set(planet.mesh.position.x + moonDistance * Math.cos(time * 2), 0, planet.mesh.position.z + moonDistance * Math.sin(time * 2));
-        }
+        const theta = time * (rotationSpeed + index * 0.1);
+        planet.mesh.position.x = planet.distance * Math.cos(theta);
+        planet.mesh.position.z = planet.distance * Math.sin(theta);
+        planet.mesh.rotation.y += rotationSpeed * 0.01;
       });
+     
 
+      // Update Moon's orbit around the Earth
+    moonTheta += 0.01;  // Ajustez la vitesse d'orbite de la Lune ici
+    moon.position.x = planetMeshes[earthIndex].mesh.position.x + moonDistance * Math.cos(moonTheta);
+    moon.position.z = planetMeshes[earthIndex].mesh.position.z + moonDistance * Math.sin(moonTheta);
+    moon.position.y = 0; 
+    moon.rotation.y += 0.01; // 
+    if (earthIndex !== -1) {
+      const earthPosition = planetMeshes[earthIndex].mesh.position;
+      moonTheta += 0.2; // Ajuster la vitesse de rotation
+      const moonX = earthPosition.x + moonDistance * Math.cos(moonTheta);
+      const moonZ = earthPosition.z + moonDistance * Math.sin(moonTheta);
+      moon.position.set(moonX, 0, moonZ);
+    }
       controls.update();
       renderer.render(scene, camera);
     };
 
-    createStars(3000); // Create 100 stars
+    createStars(5000);
     animate();
 
     return () => {
       window.removeEventListener('click', handleObjectClick);
       window.removeEventListener('mousemove', handleObjectHover);
-      renderer.dispose();
+      document.body.removeChild(renderer.domElement);
     };
-  }, [selectedBody]);
+  }, [rotationSpeed]);
+
+  // Fonction pour gérer le changement de vitesse de rotation
+  const handleRotationSpeedChange = (event) => {
+    setRotationSpeed(parseFloat(event.target.value));
+  };
 
   return (
-    <div>
-      {showInfo && (
-        <div className="info">
-          <h2>{selectedBody}</h2>
+    <div className='budy'>
+      <div className="navi">
           <ul>
-            {Object.entries(bodyData).map(([key, value]) => (
-              <li key={key}>{key}: {value}</li>
-            ))}
+            <li><a href="#home">Acceuil</a></li>
+            <li><a href="#planets">Planets</a></li>
+            <li><a href="#asteroids">Asteroids</a></li>
+            <li><a href="#comets">Comets</a></li>
+            <li><a href="#education">Education</a></li>
           </ul>
+      </div>
+
+      <div className="section1" id='home'>
+          <div className="home-container">
+      <header className="home-header">
+        <h1>Explorez les Merveilles de Notre Système Solaire</h1>
+        <p>Bienvenue dans notre exploration fascinante du système solaire !
+           Que vous soyez un novice ou simplement curieux, notre application 
+           vous guidera à travers les merveilles célestes qui composent notre 
+           environnement spatial. Apprenez à mieux comprendre les planètes qui 
+           nous entourent, les astéroïdes géocroiseurs, et découvrez l’impact
+            potentiel de ces objets mystérieux sur notre Terre.</p>
+      </header>
+      <div className="h222">
+      <h2>
+      Pourquoi explorer le système solaire ?
+      </h2>
+      <h4>
+        <em>
+        L’exploration du système solaire n’est pas seulement une aventure fascinante,
+         c’est aussi une quête pour comprendre notre place dans l'univers.
+          Les astéroïdes et les comètes jouent un rôle clé dans l’évolution de notre planète,
+           et certains d'entre eux peuvent même avoir un impact direct sur notre avenir.
+            C’est pourquoi il est essentiel d’en apprendre davantage sur ces objets célestes,
+             leurs trajectoires, et leur impact potentiel sur la Terre.
+        </em>
+      </h4>
+      </div>
+      <section className="key-points">
+        <div className="key-point">
+          <h2>Les Planètes</h2>
+          <p>Découvrez les planètes de notre système solaire, leurs caractéristiques uniques et leurs mystères.</p>
         </div>
-      )}
+        <div className="key-point">
+          <h2>Astéroïdes Géocroiseurs</h2>
+          <p>Apprenez comment ces astéroïdes proches de la Terre sont surveillés et pourquoi ils sont importants.</p>
+        </div>
+        <div className="key-point">
+          <h2>Comètes et Origines</h2>
+          <p>Découvrez l'origine des comètes, ces voyageurs cosmiques qui illuminent notre ciel nocturne.</p>
+        </div>
+      </section>
+      <section className="call-to-action">
+        <p>Plongez dans cette aventure spatiale unique, explorez les corps célestes et préparez-vous à découvrir l’univers comme vous ne l’avez jamais vu !</p>
+        <a href="#solar-system" className="explore-button">Commencez l'exploration</a>
+      </section>
+          </div>
+      </div>
+
+      <div className="section2" id='planets'   style={{ position: 'relative',}} >
+          <div id='solar-system'  style={{ position: 'absolute', top: '10px', left: '10px', color: 'white' }}>
+            <h3>Contrôle de la vitesse de rotation</h3>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={rotationSpeed}
+              onChange={handleRotationSpeedChange}
+            />
+          </div>
+          {showInfo && (
+            <div style={{ position: 'absolute', top: '100px', left: '10px', color: 'white' }}>
+              <h3>{selectedBody}</h3>
+              <ul>
+                {Object.entries(bodyData).map(([key, value]) => (
+                  <li key={key}>
+                    <strong>{key}:</strong> {value}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+      </div>
     </div>
   );
 }
